@@ -1,0 +1,22 @@
+flask
+flask-cors
+streamlit
+spacy==3.7.2
+transformers
+torch
+tensorflow
+tf-keras # Added for Keras 3 compatibility with Transformers
+scikit-learn
+yfinance
+requests
+ollama 
+# Added for Fine-Tuning
+trl
+peft
+bitsandbytes
+accelerate
+datasets
+pandas     # For handling tabular data (S&P 500 list)
+lxml       # Required by pandas for parsing HTML
+# For spacy model, run after installation:
+# python -m spacy download en_core_web_sm

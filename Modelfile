@@ -1,0 +1,2 @@
+FROM ./tinyllama-stock-advisor-merged
+TEMPLATE """<s>[INST] {{ .Prompt }} [/INST]"""
