@@ -41,8 +41,6 @@ def get_company_news(symbol):
         return {'error': f"An error occurred while fetching news for {symbol}."}
 
 
-import requests
-
 def get_stock_price(symbol):
     """
     Fetches the real-time stock price from Alpha Vantage.

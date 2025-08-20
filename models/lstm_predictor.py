@@ -1,13 +1,14 @@
 # models/lstm_predictor.py
-import random
-import yfinance as yf
 import pandas as pd
 import numpy as np
 import requests
+import os
 
 from .config import API_KEY, WINDOW_SIZE, EPOCHS, BATCH_SIZE, MODEL_PATH
 from .preprocess import preprocess_data
 from .utils import load_trained_model
+from models.train import train_model
+from models.utils import save_model
 # In a real scenario, you would import tensorflow here
 # import tensorflow as tf
 
@@ -40,13 +41,25 @@ def predict_next_price(symbol):
     if len(data) < WINDOW_SIZE:
         raise ValueError("Not enough data to predict.")
     # Preprocess (fit scaler on all history)
-    _, _, scaler = preprocess_data(np.array(data), WINDOW_SIZE)
+    x, y, scaler = preprocess_data(np.array(data), WINDOW_SIZE)
+    
+    print("Data for prediction:", data[-WINDOW_SIZE:])
     recent_prices = np.array(data[-WINDOW_SIZE:])
     prices_scaled = scaler.transform(recent_prices.reshape(-1, 1))
     X_pred = np.array([prices_scaled])
-    model = load_trained_model(MODEL_PATH)
+
+    if os.path.exists(MODEL_PATH):
+        model = load_trained_model(MODEL_PATH)
+    else:
+        print("Training the LSTM model...")
+        model = train_model(x, y, window_size=WINDOW_SIZE)
+        save_model(model, MODEL_PATH)
+        model = load_trained_model(MODEL_PATH)
+    
+
+    
     pred_scaled = model.predict(X_pred, verbose=0)
-    projected_price = scaler.inverse_transform(pred_scaled)[0]
+    projected_price = scaler.inverse_transform(pred_scaled).item()
 
     # Determine trend by comparing the projected price to the last price
     last_close = data[-1]

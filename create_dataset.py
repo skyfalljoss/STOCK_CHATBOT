@@ -25,7 +25,7 @@ def get_sp500_companies():
         fallback_data = {"Apple": "AAPL", "Microsoft": "MSFT", "Google": "GOOGL"}
         return pd.DataFrame(list(fallback_data.items()), columns=['Security', 'Symbol'])
 
-INTENTS = ["stock_price", "company_news", "market_sentiment", "company_outlook"]
+INTENTS = ["greeting", "stock_price", "company_news", "prediction", "market_trend"]
 
 def generate_synthetic_data_point(companies_df):
     """Generates a single, high-quality training example using a powerful LLM."""

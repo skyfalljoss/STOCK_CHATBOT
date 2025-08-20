@@ -60,15 +60,15 @@ def create_prompt(intent, data, user_query, history):
         # Handle general intents without specific data
         if intent == "greeting":
             return f"{system_prompt}\n\nThe user said: '{user_query}'. Respond with a friendly greeting."
-        elif intent == "market trend":
+        elif intent == "market_trend":
             return "The user asked about market trends. Explain that trends are complex and depend on major indices, then offer to look up a specific stock."
         else:
             return f"{system_prompt}\n\nThe user said: '{user_query}'. Based on the conversation history, provide a helpful response or ask for clarification."
     # Handle intents with fetched data
-    if intent == 'stock price':
+    if intent == 'stock_price':
         return f"The user asked about a stock price. You have new data: the price for {data.get('symbol', 'N/A')} is ${data.get('price', 0.0):.2f}. Incorporate this new information into a friendly response. Make sure the answer is concise and easy to read, not just a data dump. Highlight or bold the price information for emphasis."
 
-    if intent == 'company news':
+    if intent == 'company_news':
         headlines = "\n- ".join(article['title'] for article in data.get('articles', []))
         print(headlines)
         return f"The user asked for news about {data.get('symbol', 'N/A')}. You have found these headlines:\n- {headlines}\nSummarize this news conversationally. Provide the URLs for more details, but don't just list them. Make it feel like a conversation, not a data dump. Make sure the answer is concise and easy to read."

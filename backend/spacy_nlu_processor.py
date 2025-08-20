@@ -11,6 +11,13 @@ SPACY_MODEL_DIR = "./spacy_nlu_model"
 # --- Training Data ---
 # This is where you teach the model. Add more examples for better accuracy!
 
+# --- Configuration ---
+# Confidence threshold for intent classification. If the top intent's score is below this,
+# we'll check the conversation history.
+INTENT_CONFIDENCE_THRESHOLD = 0.65
+# Intents that are considered generic and should trigger a history check for context.
+CONTEXTUAL_INTENTS = ["greeting", "affirm", "thankyou"]
+
 # Global nlp object to hold the trained model
 nlp = None
 

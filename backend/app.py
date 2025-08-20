@@ -38,6 +38,7 @@ def load_model():
 @app.route('/api/chat', methods=['POST'])
 def chat():
     """Main chat endpoint to process user messages."""
+    data = None
     try:
         data = request.json
         # message = data.get("message")
@@ -54,7 +55,9 @@ def chat():
 
         # 1. Process NLP
         intent, symbol = get_intent_and_entities(latest_message, history)
-
+        print("--------------------------------")
+        print("Intent:", intent, "Symbol:", symbol)
+        print("--------------------------------")
         # raw_response = "I'm sorry, I didn't understand that. Please try asking in a different way."
         raw_data = None
 
@@ -66,7 +69,7 @@ def chat():
         #         raw_response = get_stock_price(symbol)
         #     else:
         #         raw_response = "Please specify a stock symbol or company name (e.g., 'price of AAPL')."
-        # elif intent == "market trend":
+        # elif intent == "market_trend":
         #     raw_response = "Market trends are complex. Generally, analysts look at major indices like the S&P 500 and NASDAQ. Positive economic data often leads to bullish trends."
         # elif intent == "company news":
         #     if symbol:
@@ -80,19 +83,26 @@ def chat():
         #         raw_response = "Please specify a stock symbol for the prediction (e.g., 'predict GOOGL')."
 
 
-        if intent == "stock price":
+        if intent == "stock_price":
             if symbol:
                 raw_data = get_stock_price(symbol)
             else:
                 raw_data = {"error": "Please specify a stock symbol or company name."}
-        elif intent == "company news":
+        elif intent == "company_news":
             if symbol:
                 raw_data = get_company_news(symbol)
             else:
                 raw_data = {"error": "Which company's news are you interested in?"}
         elif intent == "prediction":
             if symbol:
-                raw_data = predict_next_price(symbol)
+                try:
+                    raw_data = predict_next_price(symbol)
+                except TypeError as e:
+                    print(f"Error specifically from predict_next_price: {e}")
+                    raise e
+            # else:
+            # if symbol:
+            #     raw_data = predict_next_price(symbol)
             else:
                 raw_data = {"error": "Please specify a stock for the prediction."}
 

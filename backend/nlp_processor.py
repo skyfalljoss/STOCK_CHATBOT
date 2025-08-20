@@ -25,9 +25,9 @@ intent_labels = [
 ]
 # We'll map these descriptive labels back to our simple internal intents
 intent_map = {
-    "asking for a stock price": "stock price",
-    "asking for company news": "company news",
-    "asking about market trends": "market trend",
+    "asking for a stock price": "stock_price",
+    "asking for company news": "company_news",
+    "asking about market trends": "market_trend",
     "asking for a price prediction": "prediction",
     "a greeting or salutation": "greeting"
 }
@@ -48,7 +48,7 @@ def get_intent_and_entities(text, history=None):
     if any(keyword in lower_text for keyword in prediction_keywords):
         intent = "prediction"
     elif any(keyword in lower_text for keyword in price_keywords):
-        intent = "stock price"
+        intent = "stock_price"
 
     # If no rule matched, use the AI model with our improved labels
     if not intent:
