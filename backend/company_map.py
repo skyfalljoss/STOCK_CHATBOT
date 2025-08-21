@@ -1,6 +1,3 @@
-SPACY_MODEL_DIR = "./backend/spacy_nlu_model"
-
-
 company_map = {
     # Technology
     'apple': 'AAPL', 'microsoft': 'MSFT', 'google': 'GOOGL', 'alphabet': 'GOOGL',

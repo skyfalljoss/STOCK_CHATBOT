@@ -19,7 +19,6 @@ def main():
         data = fetch_stock_data('AAPL', outputsize='full') 
     except Exception as e:
         print(f"Error fetching data: {e}")
-        print("Please ensure your API_KEY in models/config.py is set correctly.")
         return
 
     # 2. Preprocess the data

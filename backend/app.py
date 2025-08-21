@@ -82,8 +82,13 @@ def chat():
         #     else:
         #         raw_response = "Please specify a stock symbol for the prediction (e.g., 'predict GOOGL')."
 
+        # 3. Fetch data based on intent
+        if intent == "greeting":
+            raw_data = {"response": "Hello! How can I assist you with your stock market questions today?"}
 
-        if intent == "stock_price":
+        elif intent == "market_trend":  # Market trends are complex, so we don't fetch data here
+            raw_data = {"response": "Market trends are complex. Generally, analysts look at major indices like the S&P 500 and NASDAQ. Positive economic data often leads to bullish trends."}
+        elif intent == "stock_price":
             if symbol:
                 raw_data = get_stock_price(symbol)
             else:
@@ -91,6 +96,7 @@ def chat():
         elif intent == "company_news":
             if symbol:
                 raw_data = get_company_news(symbol)
+                
             else:
                 raw_data = {"error": "Which company's news are you interested in?"}
         elif intent == "prediction":
@@ -105,7 +111,7 @@ def chat():
             #     raw_data = predict_next_price(symbol)
             else:
                 raw_data = {"error": "Please specify a stock for the prediction."}
-
+        print("Fetched news data:", raw_data)
         response_text = generate_response(intent, raw_data, latest_message, history)
         
         return jsonify({"response": response_text, "status": "success"})

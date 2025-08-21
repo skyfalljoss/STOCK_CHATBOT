@@ -1,0 +1,11 @@
+{
+  "labels":[
+    "greeting",
+    "stock_price",
+    "company_news",
+    "prediction",
+    "market_trend"
+  ],
+  "threshold":0.0,
+  "positive_label":null
+}

@@ -9,6 +9,6 @@ def preprocess_data(prices, window_size=60):
         X.append(prices_scaled[i-window_size:i, 0])
         y.append(prices_scaled[i, 0])
     X, y = np.array(X), np.array(y)
-    X = X.reshape(X.shape[0], X.shape[1], 1)
 
+    X = X.reshape(X.shape[0], X.shape[1], 1)
     return X, y, scaler

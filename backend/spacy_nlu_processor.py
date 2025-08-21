@@ -4,12 +4,13 @@ from spacy.tokens import DocBin
 from spacy.training.example import Example
 import random
 
-from .config import SPACY_MODEL_DIR, TRAIN_DATA
+from .config import SPACY_MODEL_DIR, TRAIN_DATA, EPOCHS, BATCH_SIZE
 # --- Configuration ---
-SPACY_MODEL_DIR = "./spacy_nlu_model"
+
 
 # --- Training Data ---
 # This is where you teach the model. Add more examples for better accuracy!
+
 
 # --- Configuration ---
 # Confidence threshold for intent classification. If the top intent's score is below this,
@@ -54,10 +55,10 @@ def train_spacy_nlu_model():
     # Train the model
     print("Training new Spacy NLU model...")
     optimizer = nlp.begin_training()
-    for i in range(10): # Number of training iterations
+    for i in range(EPOCHS): # Number of training iterations
         random.shuffle(training_examples)
         # for batch in spacy.util.minibatch(doc_bin.get_docs(nlp.vocab), size=8):
-        for batch in spacy.util.minibatch(training_examples, size=8):
+        for batch in spacy.util.minibatch(training_examples, size=BATCH_SIZE):
             nlp.update(batch, sgd=optimizer)
             
     # Save the trained model to disk
@@ -80,9 +81,26 @@ def get_intent_and_entities(text, history=None):
         raise RuntimeError("Spacy NLU model is not loaded.")
 
     doc = nlp(text)
+    # --- CONTEXTUAL INTENT LOGIC ---
+    scores = doc.cats
     # The predicted intent is the one with the highest score
     intent = max(doc.cats, key=doc.cats.get)
-    
+    confidence = scores[intent]
+
+    # If confidence is low or the intent is too generic, check history
+    if confidence < INTENT_CONFIDENCE_THRESHOLD or intent in CONTEXTUAL_INTENTS:
+        if history:
+            for message in reversed(history):
+                # Look for the last "actionable" intent from the user
+                if message['role'] == 'user':
+                    prev_doc = nlp(message['content'])
+                    prev_intent = max(prev_doc.cats, key=prev_doc.cats.get)
+                    if prev_intent not in CONTEXTUAL_INTENTS:
+                        print(f"Context Override: Using previous intent '{prev_intent}' instead of '{intent}'.")
+                        intent = prev_intent
+                        break # Found a useful intent, stop searching
+
+    # --- ENTITY LOGIC ---
     symbol = find_symbol_in_text(text)
 
     if not symbol and history:

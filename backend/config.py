@@ -1,10 +1,11 @@
-SPACY_MODEL_DIR = "./spacy_nlu_model"
+SPACY_MODEL_DIR = "./backend/spacy_nlu_model"
 
 EPOCHS = 20
 BATCH_SIZE = 32
 
+
 TRAIN_DATA = {
-    "greet": [
+    "greeting": [
         # Basic greetings
         "hey", "hello", "hi", "good morning", "hey there", "hello there", "hi there", 
         "good afternoon", "good evening", "yo", "what's up?", "howdy", "greetings", 
