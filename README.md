@@ -13,7 +13,7 @@ The project is organized into three main components:
 
 1. **Backend (API Server)**
 	- Handles user requests, processes natural language, fetches stock data, and serves predictions.
-	- Built with Python (Flask or FastAPI, depending on your implementation).
+	- Built with Python (Flask).
 
 2. **Models**
 	- Contains all machine learning logic, including data preprocessing, LSTM model definition, training, and prediction.
@@ -37,7 +37,7 @@ The project is organized into three main components:
 
 ## Project Structure
 ```
-chatbot2/
+STOCK-CHATBOT/
 ├── backend/
 │   ├── app.py                # Main backend API server
 │   ├── data_fetcher.py       # Fetches stock data
