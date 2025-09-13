@@ -12,10 +12,6 @@ from .utils import load_trained_model
 from models.train import train_model
 from models.utils import save_model
 
-# import tensorflow as tf
-
-# Placeholder for loading a trained model
-# model = tf.keras.models.load_model('path/to/your/lstm_model.h5')
 
 
 def fetch_stock_data(symbol, outputsize='compact'):
