@@ -372,7 +372,7 @@ TRAIN_DATA = {
         # Basic predictions
         "predict the price of GOOGL", "what is the future price of Apple?", 
         "forecast Tesla stock", "predict MSFT", "where will Amazon stock be next month?",
-        "future projection for META", "NVDA price forecast", "predict Apple's stock next week",
+        "future projection for META", "NVDA price forecast", "predict Apple's stock next week","predict the price of NVDA","predict the price of Google","predict the price of Microsoft","predict the price of Apple","predict the price of Tesla","predict the price of Amazon","predict the price of Meta","predict the price of Netflix","predict the price of AMD",
         
         # Time-based predictions
         "Tesla stock price in 2025", "Google 1 year price target", "Microsoft 5 year forecast",

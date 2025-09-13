@@ -82,7 +82,7 @@ def chat():
         #     else:
         #         raw_response = "Please specify a stock symbol for the prediction (e.g., 'predict GOOGL')."
 
-        # 3. Fetch data based on intent
+        
         if intent == "greeting":
             raw_data = {"response": "Hello! How can I assist you with your stock market questions today?"}
 
@@ -106,12 +106,11 @@ def chat():
                 except TypeError as e:
                     print(f"Error specifically from predict_next_price: {e}")
                     raise e
-            # else:
-            # if symbol:
-            #     raw_data = predict_next_price(symbol)
             else:
                 raw_data = {"error": "Please specify a stock for the prediction."}
         print("Fetched news data:", raw_data)
+        
+        # 3. Fetch data based on intent
         response_text = generate_response(intent, raw_data, latest_message, history)
         
         return jsonify({"response": response_text, "status": "success"})

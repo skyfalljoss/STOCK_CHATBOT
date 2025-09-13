@@ -1,18 +1,18 @@
 import streamlit as st
 import requests
 import json
-import os
+
 
 # --- Page Configuration ---
 st.set_page_config(
     page_title="Stock Advisory Chatbot",
-    page_icon="🤖",
+    page_icon=":()",
     layout="wide"
 )
 
 # Use session state to manage the backend URL, making it accessible globally
 if 'backend_url' not in st.session_state:
-    st.session_state.backend_url = "http://127.0.0.1:5000/api/chat"
+    st.session_state.backend_url = "http://localhost:5000/api/chat"
 
 # --- Central Query Handler ---
 def handle_query(prompt):
@@ -20,10 +20,36 @@ def handle_query(prompt):
     Handles the query by updating the session state with the user's message
     and the bot's response, then triggers a rerun to update the UI.
     """
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    
+
     # Get assistant response
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            try:
+                payload = {"messages": st.session_state.messages}
+                response = requests.post(
+                    st.session_state.backend_url,  # Use the URL from session state
+                    headers={"Content-Type": "application/json"},
+                    data=json.dumps(payload)
+                )
+                response.raise_for_status()
+                bot_response = response.json().get("response", "Sorry, something went wrong.")
+            except requests.exceptions.RequestException as e:
+                bot_response = f"Connection Error: {e}"
+        st.markdown(bot_response, unsafe_allow_html=True)
+
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": bot_response})
+    
+    # Rerun the app to show the new messages
+    st.rerun()
+
+def handle_query_with_button(prompt):
+    """
+    Handles the query by updating the session state with the user's message
+    and the bot's response, then triggers a rerun to update the UI.
+    """
+    st.session_state.messages.append({"role": "user", "content": prompt})
+
     try:
         payload = {"messages": st.session_state.messages}
         response = requests.post(
@@ -35,7 +61,8 @@ def handle_query(prompt):
         bot_response = response.json().get("response", "Sorry, something went wrong.")
     except requests.exceptions.RequestException as e:
         bot_response = f"Connection Error: {e}"
-    
+    st.markdown(bot_response, unsafe_allow_html=True)
+
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
     
@@ -90,14 +117,14 @@ with st.sidebar:
     """)
     st.markdown("---")
     
-    # --- Clickable Sample Queries ---
+    # --- Clickable  Queries ---
     st.header("Sample Queries")
     if st.button("Hello"):
-        handle_query("Hello")
+        handle_query_with_button("Hello")
     if st.button("What is the price of Apple?"):
-        handle_query("What is the price of Apple?")
+        handle_query_with_button("What is the price of Apple?")
     if st.button("Predict the price of GOOGL"):
-        handle_query("Predict the price of GOOGL")
+        handle_query_with_button("Predict the price of GOOGL")
         
     st.markdown("---")
     st.warning("**Disclaimer**: Educational tool only. Not financial advice.")
@@ -117,5 +144,9 @@ for message in st.session_state.messages:
   
 # Handle user input from the chat box
 if prompt := st.chat_input("What would you like to know?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
     handle_query(prompt)
+
 

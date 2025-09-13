@@ -2,7 +2,7 @@
 import ollama
 
 # --- Configuration ---
-# Specify the model you have running in Ollama (e.g., 'llama3', 'deepseek-coder', 'gemini')
+
 OLLAMA_MODEL = 'llama3' 
 # OLLAMA_MODEL = 'tinyllama-stock-advisor'
 # OLLAMA_MODEL = 'deepseek-r1:7b'
@@ -16,19 +16,21 @@ def generate_response(intent, data, user_query, history):
     """
     Generates a natural language response using a local LLM via Ollama.
     """
+
+    SYSTEM_PROMPT = """
+    You are an expert financial assistant. The user's conversation history is provided for context.
+    - Your task is to answer only the user's most recent query based on the new data provided.
+    - Do not repeat information that has already been discussed in the history. 
+    - Be concise and direct.
+    """
     prompt = create_prompt(intent, data, user_query)
     # The history is now part of the prompt itself, so we send it all
-    messages_for_ollama = history + [{'role': 'user', 'content': prompt}]
+    messages_for_ollama = [
+        {'role': 'system', 'content': SYSTEM_PROMPT}
+    ] + history + [
+        {'role': 'user', 'content': prompt}
+    ]
 
-    # messages_for_ollama = [
-    #     {'role': 'system', 'content': SYSTEM_PROMPT}
-    # ] + history + [
-    #     {'role': 'user', 'content': prompt}
-    # ]
-    
-    # # If the prompt is just an error message, return it directly
-    # if data and data.get("error"):
-    #     return data["error"]
 
     try:
         # Send the prompt to the Ollama API
@@ -63,9 +65,7 @@ def create_prompt(intent, data, user_query):
     #     """
     #     return prompt
 
-    if data and data.get("error"):
-        error_message = data["error"]
-        return f"""A user's query "{user_query}" resulted in an error: "{error_message}". Explain this error to the user in a helpful and conversational way. If the error is about a ticker not being found, suggest it might be a typo."""
+    
 
     if not data:
         # Handle general intents without specific data
@@ -80,14 +80,22 @@ def create_prompt(intent, data, user_query):
         return f"The user asked about a stock price. You have new data: the price for {data.get('symbol', 'N/A')} is ${data.get('price', 0.0):.2f}. Incorporate this new information into a friendly response. Highlight or bold the price information for emphasis."
 
     if intent == 'company_news':
-        headlines = "\n- ".join(article['title'] for article in data.get('articles', []))
+        if data.get('articles'):
+            headlines = "\n- ".join(article['title'] for article in data.get('articles', []))
+            urls = "\n- ".join(article['url'] for article in data.get('articles', []))
+        else:
+            headlines = "No news found"
+        # headlines = "\n- ".join(article['title'] for article in data.get('articles', []))
         
-
-        return f"The user asked for news about {data.get('symbol', 'N/A')}. You have found these headlines:\n- {headlines}\nSummarize this news conversationally. Provide the URLs for more details, but don't just list them. Make it feel like a conversation, not a data dump."
+        return f"The user asked for news about {data.get('symbol', 'N/A')}. You have found these headlines:\n- {headlines}\nSummarize this news conversationally. Provide the URL {urls} for more details, but don't just list them. Make it feel like a conversation, not a data dump. "
 
     if intent == 'prediction':
         return f"The user asked for a price prediction for {data.get('symbol', 'N/A')}. Your internal model's analysis is: Trend is {data.get('trend', 'unknown')} and projected price is around ${data.get('projected_price', 0.0):.2f}."
     # Explain this simulated prediction, strongly emphasizing it's not financial advice. Highlight or bold the projected price for emphasis.
+
+    if data and data.get("error"):
+        error_message = data["error"]
+        return f"""A user's query "{user_query}" resulted in an error: "{error_message}". Explain this error to the user in a helpful and conversational way. If the error is about a ticker not being found, suggest it might be a typo."""
         
     return f"The user said: '{user_query}'. Respond helpfully based on the conversation history."
 

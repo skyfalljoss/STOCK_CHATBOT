@@ -11,7 +11,7 @@ from .preprocess import preprocess_data
 from .utils import load_trained_model
 from models.train import train_model
 from models.utils import save_model
-# In a real scenario, you would import tensorflow here
+
 # import tensorflow as tf
 
 # Placeholder for loading a trained model

@@ -36,9 +36,9 @@ def get_company_news(symbol):
             articles = [{'title': a['title'], 'url': a['url']} for a in data["feed"][:3]]
             return {'symbol': symbol, 'articles': articles}
         else:
-            return {'error': f"Could not find any recent news for '{symbol}'."}
+            return {'symbol': symbol, 'articles': articles}
     except Exception:
-        return {'error': f"An error occurred while fetching news for {symbol}."}
+        return {'symbol': symbol, 'error': f"An error occurred while fetching news for {symbol}."}
 
 
 def get_stock_price(symbol):
