@@ -1,10 +1,10 @@
 # backend/data_fetcher.py
 import yfinance as yf
 import requests
-
+from .config import ALPHA_VANTAGE_API_KEY
 # --- Configuration ---
 # IMPORTANT: Replace with your own Alpha Vantage API key for news
-ALPHA_VANTAGE_API_KEY = "UL8R8I099TCNWANY"
+# ALPHA_VANTAGE_API_KEY = "UL8R8I099TCNWANY"
 
 # def get_stock_price(symbol):
 #     """Fetches real-time stock price from yfinance."""
@@ -24,7 +24,7 @@ ALPHA_VANTAGE_API_KEY = "UL8R8I099TCNWANY"
 
 def get_company_news(symbol):
     """Fetches company news from Alpha Vantage."""
-    if ALPHA_VANTAGE_API_KEY == "HRJ0O8ALOG17MYU8":
+    if ALPHA_VANTAGE_API_KEY == "":
         return {'error': "Alpha Vantage API key not configured."}
     try:
         url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={symbol}&limit=3&apikey={ALPHA_VANTAGE_API_KEY}'

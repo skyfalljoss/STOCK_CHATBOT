@@ -41,7 +41,6 @@ def chat():
     data = None
     try:
         data = request.json
-        # message = data.get("message")
         messages = data.get("messages")
 
         if not messages:

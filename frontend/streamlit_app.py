@@ -123,8 +123,8 @@ with st.sidebar:
         handle_query_with_button("Hello")
     if st.button("What is the price of Apple?"):
         handle_query_with_button("What is the price of Apple?")
-    if st.button("Predict the price of GOOGL"):
-        handle_query_with_button("Predict the price of GOOGL")
+    if st.button("The price of GOOGL today"):
+        handle_query_with_button("The price of GOOGL today")
         
     st.markdown("---")
     st.warning("**Disclaimer**: Educational tool only. Not financial advice.")

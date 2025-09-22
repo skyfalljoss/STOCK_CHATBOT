@@ -8,10 +8,6 @@ OLLAMA_MODEL = 'llama3'
 # OLLAMA_MODEL = 'deepseek-r1:7b'
 
 
-# System message to define the AI's personality
-
-
-
 def generate_response(intent, data, user_query, history):
     """
     Generates a natural language response using a local LLM via Ollama.
@@ -87,10 +83,10 @@ def create_prompt(intent, data, user_query):
             headlines = "No news found"
         # headlines = "\n- ".join(article['title'] for article in data.get('articles', []))
         
-        return f"The user asked for news about {data.get('symbol', 'N/A')}. You have found these headlines:\n- {headlines}\nSummarize this news conversationally. Provide the URL {urls} for more details, but don't just list them. Make it feel like a conversation, not a data dump. "
+        return f"{SYSTEM_PROMPT}. The user asked for news about {data.get('symbol', 'N/A')}. You have found these headlines:\n- {headlines}\nSummarize this news conversationally. Provide the URL {urls} for more details, but don't just list them. Make it feel like a conversation, not a data dump. "
 
     if intent == 'prediction':
-        return f"The user asked for a price prediction for {data.get('symbol', 'N/A')}. Your internal model's analysis is: Trend is {data.get('trend', 'unknown')} and projected price is around ${data.get('projected_price', 0.0):.2f}."
+        return f"{SYSTEM_PROMPT}. The user asked for a price prediction for {data.get('symbol', 'N/A')}. Your internal model's analysis is: Trend is {data.get('trend', 'unknown')} and projected price is around ${data.get('projected_price', 0.0):.2f}."
     # Explain this simulated prediction, strongly emphasizing it's not financial advice. Highlight or bold the projected price for emphasis.
 
     if data and data.get("error"):

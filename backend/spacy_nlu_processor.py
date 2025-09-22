@@ -5,19 +5,13 @@ from spacy.training.example import Example
 import random
 
 from .config import SPACY_MODEL_DIR, TRAIN_DATA, EPOCHS, BATCH_SIZE
-# --- Configuration ---
-
-
-# --- Training Data ---
-# This is where you teach the model. Add more examples for better accuracy!
-
 
 # --- Configuration ---
 # Confidence threshold for intent classification. If the top intent's score is below this,
 # we'll check the conversation history.
 INTENT_CONFIDENCE_THRESHOLD = 0.65
 # Intents that are considered generic and should trigger a history check for context.
-CONTEXTUAL_INTENTS = ["greeting", "affirm", "thankyou"]
+CONTEXTUAL_INTENTS = ["greeting", "affirm", "thankyou"]  # "affirm", "thankyou" add these to TRAIN_DATA
 
 # Global nlp object to hold the trained model
 nlp = None
@@ -39,7 +33,6 @@ def train_spacy_nlu_model():
         textcat.add_label(intent)
         
     # Prepare the training data in Spacy's format
-    # doc_bin = DocBin()
     training_examples = []
     for intent, examples in TRAIN_DATA.items():
         for text in examples:
@@ -57,7 +50,7 @@ def train_spacy_nlu_model():
     optimizer = nlp.begin_training()
     for i in range(EPOCHS): # Number of training iterations
         random.shuffle(training_examples)
-        # for batch in spacy.util.minibatch(doc_bin.get_docs(nlp.vocab), size=8):
+
         for batch in spacy.util.minibatch(training_examples, size=BATCH_SIZE):
             nlp.update(batch, sgd=optimizer)
             
@@ -77,28 +70,35 @@ def get_intent_and_entities(text, history=None):
     """
     Parses the user's text using the trained Spacy NLU model.
     """
+
     if not nlp:
         raise RuntimeError("Spacy NLU model is not loaded.")
 
-    doc = nlp(text)
-    # --- CONTEXTUAL INTENT LOGIC ---
-    scores = doc.cats
-    # The predicted intent is the one with the highest score
-    intent = max(doc.cats, key=doc.cats.get)
-    confidence = scores[intent]
 
-    # If confidence is low or the intent is too generic, check history
-    if confidence < INTENT_CONFIDENCE_THRESHOLD or intent in CONTEXTUAL_INTENTS:
-        if history:
-            for message in reversed(history):
-                # Look for the last "actionable" intent from the user
-                if message['role'] == 'user':
-                    prev_doc = nlp(message['content'])
-                    prev_intent = max(prev_doc.cats, key=prev_doc.cats.get)
-                    if prev_intent not in CONTEXTUAL_INTENTS:
-                        print(f"Context Override: Using previous intent '{prev_intent}' instead of '{intent}'.")
-                        intent = prev_intent
-                        break # Found a useful intent, stop searching
+    if "predict the price" in text.lower():
+        intent = "prediction"
+        confidence = 1.0  # Set confidence to max since this is a definite rule
+        print("Rule-based override: Intent set to 'prediction'.")
+    else:
+        doc = nlp(text)
+
+        scores = doc.cats
+        # The predicted intent is the one with the highest score
+        intent = max(doc.cats, key=doc.cats.get)
+        confidence = scores[intent]
+
+        # If confidence is low or the intent is too generic, check history
+        if confidence < INTENT_CONFIDENCE_THRESHOLD or intent in CONTEXTUAL_INTENTS:
+            if history:
+                for message in reversed(history):
+                    # Look for the last "actionable" intent from the user
+                    if message['role'] == 'user':
+                        prev_doc = nlp(message['content'])
+                        prev_intent = max(prev_doc.cats, key=prev_doc.cats.get)
+                        if prev_intent not in CONTEXTUAL_INTENTS:
+                            print(f"Context Override: Using previous intent '{prev_intent}' instead of '{intent}'.")
+                            intent = prev_intent
+                            break # Found a useful intent, stop searching
 
     # --- ENTITY LOGIC ---
     symbol = find_symbol_in_text(text)

@@ -1,5 +1,5 @@
 SPACY_MODEL_DIR = "./backend/spacy_nlu_model"
-
+ALPHA_VANTAGE_API_KEY = "UL8R8I099TCNWANY"
 EPOCHS = 20
 BATCH_SIZE = 32
 
